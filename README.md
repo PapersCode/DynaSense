@@ -25,14 +25,14 @@ hf download SIKU-BERT/sikubert
 
 #### 注意事项
 
-1. 有一些参数，如batch_size, epochs的值不一样
+1. 有一些参数，如batch_size, epochs的值需要调整
 2. 需要修改所有路径
 
 
 
 ## LLM
 
-1. requirements1 版本的环境 llama-factory 会和 xinference 有冲突，我之前都只能每次运行的时候现换不同的包版本
+1. requirements1 版本的环境 llama-factory 会和 xinference 有冲突，每次运行的时候需要换不同的包版本
 2. requirements2 版本环境无冲突，但不一定能适配硬件
 3. 所有路径最好都用绝对路径
 
@@ -69,7 +69,7 @@ Hypernetwork:
 ### 安装
 
 ```
-hf download mergekit-community/Qwen3-1.5B-Instruct --local-dir /root/autodl-tmp/models/Qwen3-1.5B-Instruct (这个可能得手动在网站下载，我用命令行当时会报错)
+hf download mergekit-community/Qwen3-1.5B-Instruct --local-dir /root/autodl-tmp/models/Qwen3-1.5B-Instruct (这个可能得手动在网站下载，用命令行可能会报错)
 hf download Qwen/Qwen2.5-7B-Instruct
 
 
@@ -80,7 +80,7 @@ hf download deepseek-ai/DeepSeek-R1-Distill-Llama-8B --local-dir /root/autodl-tm
 以下llama的两个模型需要现在hf上申请权限
 hf download meta-llama/Llama-3.2-3B-Instruct --local-dir /root/autodl-tmp/models/Llama-3.2-3B-Instruct
 hf download meta-llama/Llama-3.1-8B-Instruct --local-dir /root/autodl-tmp/models/Llama-3.1-8B-Instruct
-如果申请不到就用modelscope, 我当前只能用这个，申请了一次没过的话，这个系列就申请不了了 (好像是一样的，见https://github.com/SesameAILabs/csm/issues/99)
+如果申请不到就用modelscope, 见https://github.com/SesameAILabs/csm/issues/99
 modelscope download --model LLM-Research/Llama-3.2-3B-Instruct --local_dir /root/autodl-tmp/models/Llama-3.2-3B-Instruct
 modelscope download --model LLM-Research/Meta-Llama-3.1-8B-Instruct --local-dir /root/autodl-tmp/models/Llama-3.1-8B-Instruct
 
@@ -103,7 +103,7 @@ hf download openai-community/gpt2 --local-dir /root/autodl-tmp/models/gpt2(1.24b
     ✔ Read access
 ```
 
-如果下不了就只能上网页下载了
+如果下不了就上网页下载
 
 
 
