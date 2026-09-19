@@ -6,6 +6,17 @@
 
 本文件是 `data/` 目录当前数据结构的规范说明。项目中的部分旧注释、旧路径和 `LLM/LLM-guide.md` 仍展示过往的嵌套结构（例如顶层文档包含 `word_matches`），不能用来解释当前的 `train.json` 和 `test.json`。
 
+## 数据版本导航
+
+本目录现在同时保留两类数据，必须按标签来源区分：
+
+| 版本 | 路径 | 标签来源 | 推荐用途 |
+|---|---|---|---|
+| 当前人工审核版 | `train.json`、`test.json` | 人工逐条复核 | 正式训练和评估 |
+| 历史机翻版 | `machine_translation_original/` | 原机器生成结果，包含空标签 | 机器基线、误差分析和来源追溯 |
+
+历史机翻版有独立的数据结构和使用限制，详见 [`machine_translation_original/README.md`](machine_translation_original/README.md)。它不是 `train.json`、`test.json` 的未切分副本，也不能替代当前人工审核金标准。
+
 ## 文件一览
 
 | 文件 | 条目数 | 用途 | 当前状态 |
@@ -13,6 +24,7 @@
 | `train.json` | 19,200 | 正式训练集 | 可直接用于 PLM/LLM 训练 |
 | `test.json` | 4,800 | 正式测试集 | 可直接用于评估 |
 | `wsd_train.json` | 2,400 | 旧版 LoRA 数据占位文件 | 当前全部为空记录，不可直接训练 |
+| `machine_translation_original/` | 24,000 | 独立保存的历史机翻基线 | 不属于正式训练/测试划分；先阅读子目录 README |
 
 正式数据集只由 `train.json` 和 `test.json` 构成。两者采用固定的 80%/20% 划分，`doc_id` 没有交集。为了复现实验结果，请使用仓库给定的划分，不要重新随机切分后仍称为官方结果。
 
