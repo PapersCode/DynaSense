@@ -2,7 +2,7 @@
 
 本目录保存 DynaSense 当前使用的扁平化古汉语词义消歧（Word Sense Disambiguation, WSD）数据。
 
-`train.json` 和 `test.json` 是正式数据文件。两者的每个元素都对应一个需要判断义项的目标字实例，合计 24,000 条。当前标签已经逐条复核并按批次确认。
+`train.json` 和 `test.json` 是正式数据文件。两者的每个元素都对应一个需要判断义项的目标字实例，合计 24,000 条。
 
 本文件是 `data/` 目录当前数据结构的规范说明。项目中的部分旧注释、旧路径和 `LLM/LLM-guide.md` 仍展示过往的嵌套结构（例如顶层文档包含 `word_matches`），不能用来解释当前的 `train.json` 和 `test.json`。
 
@@ -12,10 +12,10 @@
 
 | 版本 | 路径 | 标签来源 | 推荐用途 |
 |---|---|---|---|
-| 当前人工审核版 | `train.json`、`test.json` | 人工逐条复核 | 正式训练和评估 |
+| 当前发布版 | `train.json`、`test.json` | 当前发布标签 | 正式训练和评估 |
 | 历史机翻版 | `machine_translation_original/` | 原机器生成结果，包含空标签 | 机器基线、误差分析和来源追溯 |
 
-历史机翻版有独立的数据结构和使用限制，详见 [`machine_translation_original/README.md`](machine_translation_original/README.md)。它不是 `train.json`、`test.json` 的未切分副本，也不能替代当前人工审核金标准。
+历史机翻版有独立的数据结构和使用限制，详见 [`machine_translation_original/README.md`](machine_translation_original/README.md)。它不是 `train.json`、`test.json` 的未切分副本，也不能替代当前发布版。
 
 ## 文件一览
 
@@ -90,7 +90,7 @@ id, doc_id, text, dynasty, word_id, word, options, label, type
 | `word_id` | string | 是 | 目标字在义项表中的稳定标识，例如 `w10`、`w45-2`。模型分类头和义项表关联应使用 `word_id`，不要只使用字面上的 `word`。 |
 | `word` | string | 是 | 当前需要消歧的目标字。当前版本有 63 个 `word_id`，每个 `word_id` 对应一个目标字。 |
 | `options` | array<object> | 是 | 本条记录可选的义项。每个数组元素都是只含一个键值对的对象：键为义项 ID，值为义项释义。数组顺序有意义，不能排序或转为普通字典后再保存。 |
-| `label` | string | 是 | 人工确认的正确义项 ID。它必须出现在本条记录的 `options` 中。`label` 不是朝代、不是从零开始的类别索引，也不是跨 `word_id` 的全局类别。 |
+| `label` | string | 是 | 本条记录使用的目标义项 ID。它必须出现在本条记录的 `options` 中。`label` 不是朝代、不是从零开始的类别索引，也不是跨 `word_id` 的全局类别。 |
 | `type` | array<object> | 是 | 目标字所属的统计类别。每个元素都是 `{type代码: type名称}`；一条记录可以有一个或两个类别。 |
 
 ## 唯一键与字段关系
@@ -361,18 +361,18 @@ predicted_option_id = next(iter(predicted_entry))
 
 ## 预测结果字段约定
 
-原始数据中的 `label` 是金标准，不应被模型预测覆盖。建议复制记录后添加独立预测字段：
+原始数据中的 `label` 是参考标签，不应被模型预测覆盖。建议复制记录后添加独立预测字段：
 
 | 模型流程 | 建议/现有预测字段 |
 |---|---|
 | PLM | `model_option_id` |
 | LLM | `LLM_test_option_id` |
 
-预测 ID 应当是本条 `options` 中已有的义项 ID；无法解析时可以写 `null`，但应单独统计，不要改写金标准 `label`。
+预测 ID 应当是本条 `options` 中已有的义项 ID；无法解析时可以写 `null`，但应单独统计，不要改写原始 `label`。
 
-## 当前数据质量约束
+## 数据结构约束
 
-对 `train.json` 与 `test.json` 的全量检查结果：
+`train.json` 与 `test.json` 应满足以下约束：
 
 - 24,000 条记录全部具有规定的九个字段；
 - 24,000 个 `doc_id` 全部唯一，训练集和测试集无交集；
@@ -382,8 +382,6 @@ predicted_option_id = next(iter(predicted_entry))
 - 所有记录都有非空 `type`，且 type 代码与名称保持一致；
 - 所有 12 个朝代在训练集和测试集中都有覆盖；
 - 全部 63 个 `word_id` 在训练集和测试集中都有覆盖。
-
-本次人工复核版相对于仓库此前的机器标注版调整了 6,948 条 `label`，并为 4 条记录补充了审核所需的候选义项。上述变更已经同步到固定的训练集和测试集划分中。
 
 ## 预处理时必须保持的内容
 

@@ -1,8 +1,8 @@
 # 历史机翻版数据说明
 
-本目录保存 DynaSense 数据在人工复审前的历史机翻版本，供基线复现、误差分析和版本对照使用。
+本目录保存 DynaSense 的历史机翻版本，供基线复现、误差分析和版本对照使用。
 
-> **重要：本目录不是人工审核金标准。** 需要训练或评估当前正式模型时，应使用上一级目录中的 `train.json` 和 `test.json`。不要把本目录中的机器标签与人工标签混合后仍称为人工审核数据。
+> **重要：本目录不是当前发布数据。** 需要训练或评估当前正式模型时，应使用上一级目录中的 `train.json` 和 `test.json`。不要把本目录中的机器标签与当前发布标签混合使用。
 
 ## 文件一览
 
@@ -24,7 +24,7 @@
 此版本来自早期 `word_selection(6).xlsx` 中的机器处理结果：
 
 - `label` 原样取自源表的 `correct_option_id`；
-- 没有使用后续人工确认标签补写或替换；
+- 没有使用当前发布版标签补写或替换；
 - 23,616 条记录具有机器标签；
 - 384 条记录的机器标签原本为空，JSON 中继续保存为 `null`，Excel 中继续留空；
 - 非空机器标签均能在该记录的候选义项中找到；
@@ -33,7 +33,7 @@
 - `type` 是为了统计和对照后加的辅助分类，不是原机器模型的输出。
 - `metadata.source_xlsx` 只保留原始文件名，不包含生成环境中的本地绝对路径。
 
-这里的“原始”表示机器标签没有被人工审核结果覆盖，不表示文件字节与最早 Excel 完全相同。JSON 和本目录 Excel 是在不改机器标签的前提下生成的规范化快照。
+这里的“原始”表示机器标签没有被当前发布版覆盖，不表示文件字节与最早 Excel 完全相同。JSON 和本目录 Excel 是在不改机器标签的前提下生成的规范化快照。
 
 ## 数据规模
 
@@ -53,7 +53,7 @@
 
 12 个朝代各有 2,000 条记录：西晋、北朝齐、元、后晋、东汉、南朝宋、南朝梁、西汉、清、明、宋、唐。
 
-本版本没有官方的训练集/测试集划分。不要自行切分后把结果称为仓库的正式划分；仓库正式划分只对应上一级目录的人工审核版。
+本版本没有官方的训练集/测试集划分。不要自行切分后把结果称为仓库的正式划分；仓库正式划分只对应上一级目录的当前发布版。
 
 ## JSON 顶层结构
 
@@ -99,7 +99,7 @@ assert len(word_catalog) == 244
 id, doc_id, text, word_id, word, options, label, dynasty, type
 ```
 
-注意：这里的字段顺序以及 `options`、`label` 的类型与正式人工审核版不完全相同。
+注意：这里的字段顺序以及 `options`、`label` 的类型与当前发布版不完全相同。
 
 | 字段 | JSON 类型 | 可空 | 含义与处理要求 |
 |---|---|---|---|
@@ -109,7 +109,7 @@ id, doc_id, text, word_id, word, options, label, dynasty, type
 | `word_id` | string | 否 | 机器版义项表中的目标字标识，共 244 个。 |
 | `word` | string | 否 | 需要消歧的目标字。 |
 | `options` | string | 否 | 以全角分号连接的“义项 ID: 释义”字符串，不是 JSON 数组。 |
-| `label` | string 或 null | 是 | 机器选择的义项 ID；384 条原始空值保存为 `null`。它不是人工金标准。 |
+| `label` | string 或 null | 是 | 机器选择的义项 ID；384 条原始空值保存为 `null`。它不是当前发布版的参考标签。 |
 | `dynasty` | string | 否 | 原文所属朝代。 |
 | `type` | array<object> | 否 | 后加的统计分类；可包含一个或多个 A–F 类别，无法映射时为 U。 |
 
@@ -119,7 +119,7 @@ id, doc_id, text, word_id, word, options, label, dynasty, type
 
 - `id` 在 24,000 条记录中只有 3,536 个不同值；
 - 数组下标只反映当前文件顺序；
-- 机翻版与人工审核版各有一部分独有记录，不能按位置逐行比较；
+- 机翻版与当前发布版各有一部分独有记录，不能按位置逐行比较；
 - 只有 `doc_id` 适合进行交集、差集和预测结果合并。
 
 ## `options` 的解析
@@ -130,7 +130,7 @@ id, doc_id, text, word_id, word, options, label, dynasty, type
 s1: 义项一；s2: 义项二；s3: 义项三
 ```
 
-义项 ID 并不保证只有 `s1`、`s2` 这一种形式。解析时应识别每个分隔符后、冒号前的实际 ID，并保留原顺序。下面的函数会转成与人工审核版相近的数组结构：
+义项 ID 并不保证只有 `s1`、`s2` 这一种形式。解析时应识别每个分隔符后、冒号前的实际 ID，并保留原顺序。下面的函数会转成与当前发布版相近的数组结构：
 
 ```python
 import re
@@ -219,15 +219,15 @@ word与备选义项
 - 各朝代表使用九列：`id`、`doc_id`、`text`、`word_id`、`word`、`options`、`label`、`dynasty`、`type`；
 - `type汇总` 汇总 A–F 与 U 的目标字、`word_id`、总记录数和分朝代数量；
 - `word与备选义项` 完整列出 244 个 `word_id`、目标字及候选义项；
-- 工作簿中的 24,000 条记录已经与 JSON 快照逐项核对，差异数为 0；
+- Excel 与 JSON 均包含同一批 24,000 条记录；
 - Excel 主要供浏览和人工检查，程序处理应优先使用 JSON，避免单元格显示、换行和类型自动转换带来的歧义。
 
-## 与当前人工审核版的区别
+## 与当前发布版的区别
 
-| 项目 | 历史机翻版 | 当前人工审核版 |
+| 项目 | 历史机翻版 | 当前发布版 |
 |---|---|---|
 | 路径 | `data/machine_translation_original/` | `data/train.json`、`data/test.json` |
-| 标签来源 | 机器生成的 `correct_option_id` | 人工逐条复核后的 `label` |
+| 标签来源 | 机器生成的 `correct_option_id` | 当前发布的 `label` |
 | 总记录数 | 24,000 | 24,000 |
 | 唯一 `word_id` | 244 | 63 |
 | 空标签 | 384 | 0 |
@@ -236,18 +236,18 @@ word与备选义项
 | 官方训练/测试划分 | 无 | 19,200/4,800 固定划分 |
 | 推荐用途 | 历史基线、误差分析 | 正式训练和评估 |
 
-两版不能按数组下标直接比较。当前核对结果如下：
+两版不能按数组下标直接比较。按 `doc_id` 对齐后的统计如下：
 
 | 对齐指标 | 数量 |
 |---|---:|
 | 两版共有的 `doc_id` | 20,277 |
 | 仅机翻版存在的 `doc_id` | 3,723 |
-| 仅人工审核版存在的 `doc_id` | 3,723 |
-| 共有记录中机器非空标签与人工标签相同 | 11,279 |
-| 共有记录中机器非空标签与人工标签不同 | 8,698 |
-| 共有记录中机器标签为空、人工标签已填写 | 300 |
+| 仅当前发布版存在的 `doc_id` | 3,723 |
+| 共有记录中机器非空标签与当前标签相同 | 11,279 |
+| 共有记录中机器非空标签与当前标签不同 | 8,698 |
+| 共有记录中机器标签为空、当前标签非空 | 300 |
 
-这些数字不能解释为“人工只修改了 8,698 条”或“人工审核错误数为 8,698”。原因是两版各有 3,723 条独有记录，候选义项结构也经历过整理；这里仅报告在 `doc_id` 交集上的标签字符串对照。
+这些数字不能直接视为版本修改数量。两版各有 3,723 条独有记录，候选义项结构也不完全相同；这里仅报告 `doc_id` 交集上的标签字符串对照。
 
 正确的对照方式：
 
@@ -268,21 +268,21 @@ machine_by_doc_id = {
     row["doc_id"]: row for row in machine_payload["rows"]
 }
 
-reviewed_rows = load_json("data/train.json") + load_json("data/test.json")
-reviewed_by_doc_id = {row["doc_id"]: row for row in reviewed_rows}
+current_rows = load_json("data/train.json") + load_json("data/test.json")
+current_by_doc_id = {row["doc_id"]: row for row in current_rows}
 
-shared_doc_ids = machine_by_doc_id.keys() & reviewed_by_doc_id.keys()
-machine_only = machine_by_doc_id.keys() - reviewed_by_doc_id.keys()
-reviewed_only = reviewed_by_doc_id.keys() - machine_by_doc_id.keys()
+shared_doc_ids = machine_by_doc_id.keys() & current_by_doc_id.keys()
+machine_only = machine_by_doc_id.keys() - current_by_doc_id.keys()
+current_only = current_by_doc_id.keys() - machine_by_doc_id.keys()
 
 assert len(shared_doc_ids) == 20_277
 assert len(machine_only) == 3_723
-assert len(reviewed_only) == 3_723
+assert len(current_only) == 3_723
 ```
 
 ## 最小严格校验
 
-下面的检查适合放在预处理入口，防止程序把机翻版误当成人工审核版或错误解析空标签：
+下面的检查适合放在预处理入口，防止程序把机翻版误当成当前发布版或错误解析空标签：
 
 ```python
 import json
@@ -322,11 +322,11 @@ for row in rows:
 
 ## 使用原则
 
-1. 正式训练和评估默认使用人工审核版 `train.json`、`test.json`。
-2. 机翻版仅用于机器基线复现、人工修订分析或数据来源追溯。
+1. 正式训练和评估默认使用当前发布版 `train.json`、`test.json`。
+2. 机翻版仅用于机器基线复现、版本差异分析或数据来源追溯。
 3. 读取 JSON 时从 `payload["rows"]` 取得记录，不要遍历顶层对象键。
 4. 监督训练前显式排除或单独处理 384 条 `label = null` 的记录。
 5. 不要把 `null` 自动替换为第一个候选项。
-6. 不要按数组位置或 Excel 行号与人工审核版合并，只使用 `doc_id`。
-7. 不要假设机翻版与人工审核版拥有相同的 `word_id` 集合或候选项结构。
-8. 发布实验结果时明确写明使用的是“历史机翻版”还是“当前人工审核版”。
+6. 不要按数组位置或 Excel 行号与当前发布版合并，只使用 `doc_id`。
+7. 不要假设机翻版与当前发布版拥有相同的 `word_id` 集合或候选项结构。
+8. 发布实验结果时明确写明使用的是“历史机翻版”还是“当前发布版”。
