@@ -1,38 +1,33 @@
 # DynaSense 数据说明
 
-`data/` 目录包含当前发布版数据和历史机翻版数据。
+## 数据文件
 
-## 文件
+| 文件 | 条目数 | 用途 |
+|---|---:|---|
+| `all_data.json` | 24,000 | 所有数据 |
+| `test.json` | 4,800 | 所有测试数据（20%） |
+| `train.json` | 19,200 | 所有训练数据（80%） |
+| `wsd_train.json` | 2,400 | LLM 训练 LoRA 和 PLM 训练 HyperNetworks 的数据 |
+| [`machine_annotation_original/`](machine_annotation_original/) | 24,000 | 机器标注结果，仅用于和人类标注结果进行比较，不是 gold label |
 
-| 路径 | 内容 |
-|---|---|
-| `train.json` | 训练集，19,200 条 |
-| `test.json` | 测试集，4,800 条 |
-| `machine_translation_original/` | 历史机翻版及其说明 |
-| `wsd_train.json` | 旧版 LoRA 占位文件，不作为当前训练数据 |
+## 数据规模
 
-当前发布版使用 `train.json` 和 `test.json`。历史机翻版的数据结构不同，见 [`machine_translation_original/README.md`](machine_translation_original/README.md)。
-
-## 数据概览
-
-| 项目 | 数量 |
+| 类别 | 数值 |
 |---|---:|
-| 记录 | 24,000 |
-| `doc_id` | 24,000 |
-| 来源文档 `id` | 3,524 |
-| 朝代 | 12 |
-| `word_id` | 63 |
-| 目标字 | 63 |
+| 总条目数 | 24,000 |
+| 来源文档数 | 3,524 |
+| 朝代数 | 12 |
+| 目标字数 | 63 |
 
-## JSON 格式
+## JSON 顶层结构
 
-`train.json` 和 `test.json` 的顶层均为数组。每条记录包含九个字段：
+`all_data.json`、`train.json` 和 `test.json` 的顶层都是 JSON 数组。每个元素包含以下九个字段：
 
 ```text
 id, doc_id, text, dynasty, word_id, word, options, label, type
 ```
 
-示例：
+结构示例：
 
 ```json
 {
@@ -54,32 +49,19 @@ id, doc_id, text, dynasty, word_id, word, options, label, type
 }
 ```
 
-## 字段
+## 字段定义
 
-| 字段 | 类型 | 说明 |
+| 字段 | JSON 类型 | 含义 |
 |---|---|---|
-| `id` | integer | 来源文档编号，同一文档可对应多条记录 |
-| `doc_id` | string | 记录的唯一标识 |
-| `text` | string | 古文上下文，目标字用 `【】` 标记 |
-| `dynasty` | string | 原文所属朝代 |
-| `word_id` | string | 目标字及其义项表的编号 |
-| `word` | string | 目标字 |
-| `options` | array<object> | 候选义项，数组元素为 `{义项ID: 释义}` |
-| `label` | string | 当前记录对应的义项 ID |
-| `type` | array<object> | 统计分类，数组元素为 `{类型代码: 类型名称}` |
-
-读取示例：
-
-```python
-import json
-
-with open("data/train.json", "r", encoding="utf-8") as file:
-    train = json.load(file)
-
-text = train[0]["text"]
-options = train[0]["options"]
-label = train[0]["label"]
-```
+| `id` | integer | 来源古文文档的数字编号。一个来源文档可以产生多条 WSD 数据，因此 `id` 不唯一，不能作为样本主键。 |
+| `doc_id` | string | 当前 WSD 条目的唯一标识，格式为 `doc_<id>_<8位数字>`。 |
+| `text` | string | 包含上下文的古文原文。 |
+| `dynasty` | string | 原文所属朝代。 |
+| `word_id` | string | 目标字在义项表中的稳定标识，例如 `w10`、`w45-2`。 |
+| `word` | string | 当前需要消歧的目标字。 |
+| `options` | array | 本条记录可选的义项。 |
+| `label` | string | 人工确认的正确义项 ID。 |
+| `type` | array | 目标字所属的统计类别。 |
 
 ## 朝代与固定划分
 
@@ -110,7 +92,3 @@ label = train[0]["label"]
 | D | 社会身份/群体语义字 | 1,489 |
 | E | 评价性/情态字 | 4,267 |
 | F | 反直觉历史语义字 | 2,155 |
-
-## 历史机翻版
-
-历史机翻版位于 `machine_translation_original/`，包括 JSON 和分朝代 Excel。该版本保留早期机器标签，用于基线实验和版本比较。
