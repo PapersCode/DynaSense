@@ -33,7 +33,7 @@ pip install torch transformers tqdm
 # 第40-42行
 MODEL_NAME = "/root/autodl-tmp/models/Qwen3-1.5B-Instruct"  # LLM模型路径
 ADAPTER_PT_PATH = "/root/autodl-tmp/atd/data/结果/LLM/dynasty_adapters.pt"  # adapter文件
-JSON_PATH = "/root/autodl-tmp/atd/data/人工标注/最终结果/merged_dataset_Type_flattened.json"  # 输入数据
+JSON_PATH = "/path/to/DynaSense/data/test.json"  # 输入数据
 ```
 
 ### 步骤4: 验证数据格式
@@ -42,10 +42,12 @@ JSON_PATH = "/root/autodl-tmp/atd/data/人工标注/最终结果/merged_dataset_
 
 ```json
 {
-  "index": 0,
-  "label": "唐",  // ← 必需
+  "doc_id": "doc_104310_95642285",
+  "dynasty": "唐",
   "text": "古文原文...",
-  "word_matches": [...]
+  "word": "兵",
+  "options": [{"s1": "兵器"}, {"s2": "军事"}],
+  "label": "s1"
 }
 ```
 

@@ -1,6 +1,7 @@
 import os
 import json
 import random
+from pathlib import Path
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 from collections import defaultdict
@@ -411,7 +412,7 @@ def pretrain_and_save_adapters(train_json: str, config: HyperAdapterConfig):
 
 
 if __name__ == "__main__":
-    TRAIN_JSON = "/root/autodl-tmp/atd/data/人工标注/最终结果/train.json"
+    TRAIN_JSON = str(Path(__file__).resolve().parents[1] / "data" / "wsd_train.json")
     cfg = HyperAdapterConfig(
         model_name="/root/autodl-tmp/models/Qwen3-1.5B-Instruct",  # 可换成你列出的任意模型
         save_path="/root/autodl-tmp/atd/data/结果/LLM/dynasty_adapters.pt",

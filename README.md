@@ -1,5 +1,7 @@
 ## 总述
 
+本仓库提供论文《Bridging the Temporal Gap: A New Benchmark and Dynasty-aware Adaptation Framework for Ancient Chinese WSD》的相关代码与数据。
+
 ## PLM
 
 ### 模型

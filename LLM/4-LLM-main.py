@@ -18,6 +18,7 @@ import time
 import logging
 import threading
 import concurrent.futures
+from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, TimeoutError, as_completed
 from logging.handlers import RotatingFileHandler
 from xinference.client import RESTfulClient
@@ -32,7 +33,7 @@ MODEL_UID = "qwen3"
 # 配置常量（请按实际路径/需求修改）
 # -----------------------------
 
-JSON_PATH = f"/root/autodl-tmp/atd/data/人工标注/最终结果/merged_dataset_Type.json"  # 输入JSON文件路径
+JSON_PATH = str(Path(__file__).resolve().parents[1] / "data" / "test.json")  # 输入JSON文件路径
 OUTPUT_JSON = f"/root/autodl-tmp/atd/data/结果/LLM/{MODEL_UID}.json"  # 测试结果JSON文件
 LOG_FILE = f"/root/autodl-tmp/atd/data/结果/LLM/{MODEL_UID}.log"
 

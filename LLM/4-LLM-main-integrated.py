@@ -22,6 +22,7 @@ import logging
 import threading
 import torch
 import concurrent.futures
+from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, TimeoutError, as_completed
 from logging.handlers import RotatingFileHandler
 from tqdm import tqdm
@@ -43,7 +44,7 @@ MODEL_NAME = "/root/autodl-tmp/models/Qwen3-1.5B-Instruct"
 ADAPTER_PT_PATH = "/root/autodl-tmp/atd/data/结果/LLM/dynasty_adapters.pt"
 
 # 数据和输出路径
-JSON_PATH = "/root/autodl-tmp/atd/data/人工标注/最终结果/merged_dataset_Type.json"
+JSON_PATH = str(Path(__file__).resolve().parents[1] / "data" / "test.json")
 OUTPUT_JSON = "/root/autodl-tmp/atd/data/结果/LLM/result_with_adapters.json"
 LOG_FILE = "/root/autodl-tmp/atd/data/结果/LLM/result_with_adapters.log"
 
@@ -402,8 +403,8 @@ def process_item(item):
         logger.info(f"跳过已处理的记录: idx={idx}, word={word}, LLM_test_option_id={item['LLM_test_option_id']}")
         return item
 
-    # 从item中提取dynasty (新数据中朝代字段为label)
-    dynasty = item.get("label") or item.get("dynasty") or item.get("period") or None
+    # 从当前数据结构的 dynasty 字段中提取朝代
+    dynasty = item.get("dynasty") or item.get("period") or None
 
     logger.info(f"处理记录: idx={idx}, word={word}, dynasty={dynasty}, options数量={len(options_list)}")
 

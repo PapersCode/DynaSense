@@ -7,7 +7,7 @@
 | `all_data.json` | 24,000 | 所有数据 |
 | `test.json` | 4,800 | 所有测试数据（20%） |
 | `train.json` | 19,200 | 所有训练数据（80%） |
-| `wsd_train.json` | 2,400 | LLM 训练 LoRA 和 PLM 训练 HyperNetworks 的数据 |
+| `wsd_train.json` | 2,400 | 从训练集按朝代各取 200 条，用于 LLM 训练 LoRA 和 PLM 训练 HyperNetworks |
 | [`machine_annotation_original/`](machine_annotation_original/) | 24,000 | 机器标注结果，仅用于和人类标注结果进行比较，不是 gold label |
 
 ## 数据规模

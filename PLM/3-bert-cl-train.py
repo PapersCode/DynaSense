@@ -238,7 +238,7 @@ class WSDTrainer:
     def load_data(self, data_path: str) -> List[Dict]:
         with open(data_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-        print(f"✓ 加载数据: {len(data)} 条")
+        print(f"[OK] 加载数据: {len(data)} 条")
         return data
 
     def prepare_data(self, data: List[Dict]) -> List[Dict]:
@@ -654,8 +654,9 @@ def main():
         adapter_scale=1.0
     )
 
-    TRAIN_DATA_PATH = "/root/autodl-tmp/atd/data/人工标注/最终结果/train.json"
-    TEST_DATA_PATH = "/root/autodl-tmp/atd/data/人工标注/最终结果/test.json"
+    DATA_DIR = Path(__file__).resolve().parents[1] / "data"
+    TRAIN_DATA_PATH = str(DATA_DIR / "train.json")
+    TEST_DATA_PATH = str(DATA_DIR / "test.json")
     MODEL_SAVE_DIR = "/root/autodl-tmp/atd/data/结果/PLM/CL/"
     PREDICTIONS_PATH = "/root/autodl-tmp/atd/data/结果/PLM/0406-bert-pred.json"
     REPORT_PATH = "/root/autodl-tmp/atd/data/结果/PLM/0406-bert-eval.xlsx"
